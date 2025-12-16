@@ -1,7 +1,7 @@
 [project]
-name = "flappy-evolution"
+name = "neuroevolution-games"
 version = "0.1.0"
-description = "Add your description here"
+description = "Neuroevolution experiments with games: Flappy Bird and LunarLander"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
