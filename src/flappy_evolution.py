@@ -2,6 +2,7 @@ import pygame
 import numpy as np
 import random
 import sys
+import copy
 
 # ==========================================
 # 1. 配置参数
@@ -12,6 +13,7 @@ POPULATION_SIZE = 50   # 每一代有多少只鸟
 MUTATION_RATE = 0.1    # 变异概率
 MUTATION_SCALE = 0.5   # 变异强度
 FPS = 60
+BIRD_X = 50            # 鸟的固定X坐标
 
 # 颜色
 WHITE = (255, 255, 255)
@@ -43,7 +45,10 @@ class NeuralNetwork:
         a1 = np.tanh(z1) # 激活函数
         # Layer 2
         z2 = np.dot(a1, self.w2) + self.b2
-        a2 = 1.0 / (1.0 + np.exp(-z2)) # Sigmoid
+        # Numerically stable sigmoid to prevent overflow
+        a2 = np.where(z2 >= 0, 
+                      1.0 / (1.0 + np.exp(-z2)), 
+                      np.exp(z2) / (1.0 + np.exp(z2)))
         return a2
 
     def copy_and_mutate(self):
@@ -92,7 +97,7 @@ class Bird:
         # 输入2: 距离管子顶部的差值 (关键特征)
         input2 = (pipe.top_height + pipe.gap_size / 2 - self.y) / SCREEN_HEIGHT
         # 输入3: 距离管子的水平距离
-        input3 = (pipe.x - 50) / SCREEN_WIDTH
+        input3 = (pipe.x - BIRD_X) / SCREEN_WIDTH
 
         inputs = np.array([input1, input2, input3])
         
@@ -136,6 +141,9 @@ def main():
     
     # 记录历史最高分
     best_all_time = 0
+    
+    # 快进模式标志
+    fast_forward = False
 
     while True:
         # 重置游戏状态
@@ -151,6 +159,9 @@ def main():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        fast_forward = not fast_forward
 
             # --- 1. 更新管子 ---
             if pipes[-1].x < SCREEN_WIDTH - 200:
@@ -159,14 +170,15 @@ def main():
             for pipe in pipes:
                 pipe.update()
                 pipe.draw(screen)
-                
-                # 移除屏幕外的管子
-                if pipe.x + pipe.width < 0:
-                    pipes.remove(pipe)
+            
+            # 移除屏幕外的管子 (安全的列表过滤，不在迭代时修改)
+            pipes = [pipe for pipe in pipes if pipe.x + pipe.width >= 0]
 
             # 获取最近的管子 (用于输入给神经网络)
+            if not pipes:  # 防止空列表导致崩溃
+                pipes.append(Pipe())
             closest_pipe = pipes[0]
-            if closest_pipe.x + closest_pipe.width < 50: # 鸟的X坐标约为50
+            if closest_pipe.x + closest_pipe.width < BIRD_X:
                 if len(pipes) > 1:
                     closest_pipe = pipes[1]
 
@@ -178,7 +190,7 @@ def main():
                     # 物理更新
                     bird.update()
                     # 绘制
-                    pygame.draw.circle(screen, bird.color, (50, int(bird.y)), 10)
+                    pygame.draw.circle(screen, bird.color, (BIRD_X, int(bird.y)), 10)
 
                     # --- 碰撞检测 ---
                     # 撞天花板或地板
@@ -187,7 +199,7 @@ def main():
                     
                     # 撞管子
                     # 简单的矩形碰撞逻辑
-                    bird_rect = pygame.Rect(50 - 10, bird.y - 10, 20, 20)
+                    bird_rect = pygame.Rect(BIRD_X - 10, bird.y - 10, 20, 20)
                     top_rect = pygame.Rect(closest_pipe.x, 0, closest_pipe.width, closest_pipe.top_height)
                     bottom_rect = pygame.Rect(closest_pipe.x, closest_pipe.top_height + closest_pipe.gap_size, closest_pipe.width, SCREEN_HEIGHT)
                     
@@ -200,7 +212,8 @@ def main():
             screen.blit(text, (10, 10))
             
             pygame.display.flip()
-            clock.tick(FPS) # 如果想加速训练，可以把 FPS 调高或者注释掉
+            if not fast_forward:
+                clock.tick(FPS)  # 按空格键切换快进模式
 
         # ==========================================
         # 进化核心: 自然选择
@@ -219,9 +232,8 @@ def main():
         new_birds = []
         
         # 精英策略 (Elitism): 直接保留这一代最好的鸟，不修改，防止退化
-        new_birds.append(Bird(best_bird.brain.copy_and_mutate())) 
-        # (实际上这里为了代码简单，我让最好的鸟也变异了一点点。
-        # 严格来说应该 new_birds.append(Bird(copy.deepcopy(best_bird.brain))) )
+        elite_brain = copy.deepcopy(best_bird.brain)  # 真正的精英保留，不变异
+        new_birds.append(Bird(elite_brain))
 
         # 剩下的位置，全部由最好的那几只鸟变异产生
         # 我们只取前 5 名进行繁衍
