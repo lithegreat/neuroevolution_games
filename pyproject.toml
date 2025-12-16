@@ -1,0 +1,12 @@
+[project]
+name = "flappy-evolution"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "gymnasium[box2d]>=1.2.2",
+    "neat-python>=1.1.0",
+    "numpy>=2.3.5",
+    "pygame>=2.6.1",
+]
