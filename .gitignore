@@ -8,3 +8,19 @@ wheels/
 
 # Virtual environments
 .venv
+
+# NEAT checkpoints (regenerated during training)
+checkpoints/
+
+# Trained models
+model/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
