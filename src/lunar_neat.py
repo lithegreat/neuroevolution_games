@@ -1,6 +1,8 @@
 import os
 import sys
 import pickle
+import yaml
+import tempfile
 
 # 依赖检查
 try:
@@ -8,15 +10,41 @@ try:
     import neat
     import numpy as np
 except ImportError as e:
-    print(f"Missing dependency: {e}. Install with: pip install gymnasium neat-python numpy")
+    print(f"Missing dependency: {e}. Install with: pip install gymnasium neat-python numpy pyyaml")
     sys.exit(1)
 
 # ==========================================
 # 配置常量
 # ==========================================
 MAX_STEPS = 1000        # 每个episode的最大步数
-NUM_EVAL_EPISODES = 3   # 用于评估fitness的episode数量
-NUM_GENERATIONS = 100   # 进化代数 (增加到100代以提高成功率)
+NUM_EVAL_EPISODES = 2   # 用于评估fitness的episode数量
+NUM_GENERATIONS = 30    # 进化代数
+
+# ==========================================
+# 辅助函数：将YAML配置转换为NEAT配置格式
+# ==========================================
+def yaml_to_neat_config(yaml_path):
+    """
+    将YAML配置文件转换为NEAT可以读取的INI格式
+    返回临时配置文件路径
+    """
+    with open(yaml_path, 'r') as f:
+        config_data = yaml.safe_load(f)
+    
+    # 创建临时配置文件
+    temp_config = tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False)
+    
+    for section, params in config_data.items():
+        temp_config.write(f"[{section}]\n")
+        for key, value in params.items():
+            # 处理布尔值转换为NEAT格式
+            if isinstance(value, bool):
+                value = str(value)
+            temp_config.write(f"{key:<30} = {value}\n")
+        temp_config.write("\n")
+    
+    temp_config.close()
+    return temp_config.name
 
 # ==========================================
 # 1. 定义核心：如何评估一个“大脑”的好坏
@@ -140,16 +168,24 @@ def run_demo(genome, config, num_episodes=3):
 # 主入口
 # ==========================================
 if __name__ == '__main__':
-    # 配置文件路径 (静态文件，位于 config/ 目录)
+    # 配置文件路径 (YAML格式，位于 config/ 目录)
     local_dir = os.path.dirname(os.path.abspath(__file__))
-    config_path = os.path.join(local_dir, '..', 'config', 'config-feedforward.txt')
+    config_path = os.path.join(local_dir, '..', 'config', 'config-feedforward.yaml')
     
     if not os.path.exists(config_path):
         print(f"Error: Config file not found at {config_path}")
         sys.exit(1)
-
-    # 训练
-    winner, config = run_neat(config_path)
-
-    # 演示冠军
-    run_demo(winner, config)
+    
+    # 将YAML转换为NEAT配置格式
+    neat_config_path = yaml_to_neat_config(config_path)
+    
+    try:
+        # 训练
+        winner, config = run_neat(neat_config_path)
+        
+        # 演示冠军
+        run_demo(winner, config)
+    finally:
+        # 清理临时文件
+        if os.path.exists(neat_config_path):
+            os.unlink(neat_config_path)
