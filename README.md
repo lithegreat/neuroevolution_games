@@ -77,7 +77,7 @@ neuroevolution_games/
 │   ├── flappy_evolution.py  # Flappy Bird with custom GA
 │   └── lunar_neat.py         # Lunar Lander with NEAT
 ├── config/
-│   └── config-feedforward.txt  # NEAT configuration
+│   └── config-feedforward.yaml  # NEAT configuration
 ├── checkpoints/              # Training checkpoints (auto-saved)
 └── pyproject.toml            # Dependencies
 ```
@@ -96,7 +96,7 @@ neuroevolution_games/
 
 ## 🔧 Configuration
 
-Edit [config/config-feedforward.txt](config/config-feedforward.txt) to tune NEAT parameters:
+Edit [config/config-feedforward.yaml](config/config-feedforward.yaml) to tune NEAT parameters:
 - `pop_size`: Population size (default: 100)
 - `fitness_threshold`: Success criteria (default: 200)
 - `conn_add_prob`: Connection mutation rate
