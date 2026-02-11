@@ -102,38 +102,38 @@ class GameEvent:
 EVENT_CATALOGUE: Dict[str, GameEvent] = {
     "dust_storm": GameEvent(
         name="dust_storm",
-        title="🌪️ 沙尘暴 (Dust Storm)",
+        title="🌪️ Dust Storm",
         description=(
-            "一场猛烈的沙尘暴遮蔽了太阳能板！"
-            "电力上限从 100 降至 60。"
+            "A fierce dust storm shrouds the solar arrays! "
+            "Energy capacity drops from 100 to 60."
         ),
         icon="🌪️",
         b_ub_override=np.array([60.0, 80.0]),
     ),
     "flu": GameEvent(
         name="flu",
-        title="🤒 流感爆发 (Flu Outbreak)",
+        title="🤒 Flu Outbreak",
         description=(
-            "殖民者大面积感染流感！"
-            "可用人力从 80 降至 50。"
+            "A widespread flu outbreak hits the colonists! "
+            "Available labour falls from 80 to 50."
         ),
         icon="🤒",
         b_ub_override=np.array([100.0, 50.0]),
     ),
     "tech_breakthrough": GameEvent(
         name="tech_breakthrough",
-        title="🔬 技术突破 (Tech Breakthrough)",
+        title="🔬 Tech Breakthrough",
         description=(
-            "研究团队取得重大突破！"
-            "所有产出系数翻倍！(本回合有效)"
+            "Research teams achieve a major breakthrough! "
+            "All production coefficients are doubled this turn."
         ),
         icon="🔬",
         coeff_multiplier=2.0,
     ),
     "clear": GameEvent(
         name="clear",
-        title="☀️ 风平浪静 (All Clear)",
-        description="本回合一切正常，没有突发事件。",
+        title="☀️ All Clear",
+        description="Nothing unusual this turn; systems nominal.",
         icon="☀️",
     ),
 }
@@ -210,8 +210,7 @@ def advance_turn() -> None:
         )
 
     st.session_state.event_log.append(
-        f"回合 {st.session_state.turn + 1}: "
-        f"{event.title}"
+        f"Turn {st.session_state.turn + 1}: {event.title}"
     )
     st.session_state.turn += 1
 
@@ -317,7 +316,7 @@ def draw_lp_plot(
         x_range, y_c1,
         label=(
             rf"$C_1$: $2x_1 + x_2 \leq {b_ub[0]:.0f}$"
-            " (电力)"
+            " (Energy)"
         ),
         color="#1f77b4", linewidth=2,
     )
@@ -327,7 +326,7 @@ def draw_lp_plot(
         x_range, y_c2,
         label=(
             rf"$C_2$: $x_1 + 2x_2 \leq {b_ub[1]:.0f}$"
-            " (人力)"
+            " (Labour)"
         ),
         color="#ff7f0e", linewidth=2,
     )
@@ -350,7 +349,7 @@ def draw_lp_plot(
     ax.add_patch(Polygon(
         polygon_verts, closed=True,
         facecolor="lightgray", edgecolor="gray",
-        alpha=0.45, label="可行域 (Feasible Region)",
+        alpha=0.45, label="Feasible Region",
     ))
 
     # Player point
@@ -363,7 +362,7 @@ def draw_lp_plot(
         color=player_color, markersize=12,
         markeredgecolor="black", markeredgewidth=1.5,
         label=(
-            f"玩家选择 ({x1_player:.0f}, {x2_player:.0f})"
+            f"Player choice ({x1_player:.0f}, {x2_player:.0f})"
         ),
         zorder=5,
     )
@@ -373,7 +372,7 @@ def draw_lp_plot(
         x1_opt, x2_opt, "*",
         color="#2ecc71", markersize=20,
         markeredgecolor="black", markeredgewidth=1,
-        label=f"最优解 ({x1_opt:.1f}, {x2_opt:.1f})",
+        label=f"Optimal ({x1_opt:.1f}, {x2_opt:.1f})",
         zorder=5,
     )
 
@@ -384,15 +383,15 @@ def draw_lp_plot(
         ax.plot(
             x_range, y_iso, "--",
             color="#9b59b6", linewidth=1, alpha=0.6,
-            label=f"等利润线 Z = {z_player:.0f}",
+            label=f"Iso-profit line Z = {z_player:.0f}",
         )
 
     ax.set_xlim(0, X_MAX)
     ax.set_ylim(0, Y_MAX)
-    ax.set_xlabel(r"$x_1$ — 氧气产量 (Oxygen)", fontsize=12)
-    ax.set_ylabel(r"$x_2$ — 食物产量 (Food)", fontsize=12)
+    ax.set_xlabel(r"$x_1$ — Oxygen production", fontsize=12)
+    ax.set_ylabel(r"$x_2$ — Food production", fontsize=12)
     ax.set_title(
-        f"Aion's Edge · Level 1 — 回合 "
+        f"Aion's Edge · Level 1 — Turn "
         f"{st.session_state.turn}/{TOTAL_TURNS}",
         fontsize=14, fontweight="bold",
     )
@@ -439,11 +438,10 @@ def render_level1() -> None:
     if st.session_state.game_over:
         st.balloons()
         st.success(
-            f"🎉 恭喜！你成功生存了 {TOTAL_TURNS} 回合！\n\n"
-            f"累计总产值: "
-            f"**{st.session_state.total_score:.0f}**"
+            f"🎉 Congratulations! You survived {TOTAL_TURNS} turns!\n\n"
+            f"Cumulative total output: **{st.session_state.total_score:.0f}**"
         )
-        if st.button("🔄 重新开始", key="l1_restart"):
+        if st.button("🔄 Restart", key="l1_restart"):
             for k in [
                 "turn", "b_ub", "objective",
                 "current_event", "event_log",
@@ -459,25 +457,25 @@ def render_level1() -> None:
 
     st.markdown(
         f"""
-        你是殖民地中央 AI **AION**。调整 **氧气** ($x_1$) 和
-        **食物** ($x_2$) 的生产配额，在有限的 **电力** 和
-        **人力** 约束下，最大化殖民地的总产值：
+        You are the colony's central AI **AION**. Adjust production of **Oxygen** ($x_1$)
+        and **Food** ($x_2$) to maximise total colony output under limited **Energy**
+        and **Labour** constraints:
 
         $$Z = {obj[0]:.0f}\\,x_1 + {obj[1]:.0f}\\,x_2$$
         """
     )
 
     # Sidebar controls
-    st.sidebar.header("⚙️ L1 生产控制面板")
+    st.sidebar.header("⚙️ L1 Production Control")
     st.sidebar.markdown(
-        f"**回合 {st.session_state.turn} / {TOTAL_TURNS}**"
+        f"**Turn {st.session_state.turn} / {TOTAL_TURNS}**"
     )
 
     x1_player = st.sidebar.slider(
-        "x₁ — 氧气产量", 0, 60, 20, 1, key="l1_x1",
+        "x₁ — Oxygen production", 0, 60, 20, 1, key="l1_x1",
     )
     x2_player = st.sidebar.slider(
-        "x₂ — 食物产量", 0, 80, 20, 1, key="l1_x2",
+        "x₂ — Food production", 0, 80, 20, 1, key="l1_x2",
     )
 
     st.sidebar.markdown("---")
@@ -491,7 +489,7 @@ def render_level1() -> None:
 
     st.sidebar.markdown("---")
     if st.sidebar.button(
-        "⏭️ 提交并进入下一回合",
+        "⏭️ Submit and Next Turn",
         use_container_width=True,
         key="l1_next",
     ):
@@ -503,7 +501,7 @@ def render_level1() -> None:
         st.rerun()
 
     st.sidebar.metric(
-        "📈 累计总产值",
+        "📈 Cumulative Total Output",
         f"{st.session_state.total_score:.0f}",
     )
 
@@ -525,53 +523,53 @@ def render_level1() -> None:
         st.pyplot(fig)
 
     with col_info:
-        st.markdown("### 📊 面板状态")
+        st.markdown("### 📊 Panel Status")
         if feasible:
-            st.success("✅ 生产方案可行！")
+            st.success("✅ Production plan is feasible!")
         else:
-            st.error("🚨 资源不足！当前方案超出约束！")
+            st.error("🚨 Not enough resources — plan exceeds constraints!")
 
         st.metric(
-            "当前总产值 Z", f"{z_player:.0f}",
+            "Current Total Output Z", f"{z_player:.0f}",
             delta=(
-                f"{z_player - opt_value:+.0f} vs 最优"
-                if feasible else "不可行"
+                f"{z_player - opt_value:+.0f} vs Optimal"
+                if feasible else "Infeasible"
             ),
         )
-        st.metric("最优总产值 Z*", f"{opt_value:.0f}")
+        st.metric("Optimal Total Output Z*", f"{opt_value:.0f}")
 
         st.markdown("---")
         c1_used = 2 * x1_player + x2_player
         c2_used = x1_player + 2 * x2_player
         st.markdown(
-            f"**电力** (C₁): {c1_used:.0f}/{b_ub[0]:.0f}"
+            f"**Energy** (C₁): {c1_used:.0f}/{b_ub[0]:.0f}"
         )
         st.progress(min(c1_used / b_ub[0], 1.0))
         st.markdown(
-            f"**人力** (C₂): {c2_used:.0f}/{b_ub[1]:.0f}"
+            f"**Labour** (C₂): {c2_used:.0f}/{b_ub[1]:.0f}"
         )
         st.progress(min(c2_used / b_ub[1], 1.0))
 
         st.markdown("---")
         st.markdown(
-            f"**最优解**: $x_1^*={x1_opt:.1f}$, "
+            f"**Optimal solution**: $x_1^*={x1_opt:.1f}$, "
             f"$x_2^*={x2_opt:.1f}$"
         )
         if feasible and opt_value > 0:
             eff = z_player / opt_value * 100
-            st.markdown(f"**效率**: {eff:.1f}%")
+            st.markdown(f"**Efficiency**: {eff:.1f}%")
             if eff >= 99.9:
                 st.balloons()
-                st.success("🎉 完美！")
+                st.success("🎉 Perfect!")
             elif eff >= 90:
-                st.info("👍 非常接近！")
+                st.info("👍 Very close!")
             elif eff >= 70:
-                st.warning("💡 还有优化空间。")
+                st.warning("💡 Room for improvement.")
             else:
-                st.warning("⚠️ 产值偏低。")
+                st.warning("⚠️ Low output.")
 
     if st.session_state.event_log:
-        with st.expander("📜 事件日志"):
+        with st.expander("📜 Event Log"):
             for e in reversed(st.session_state.event_log):
                 st.markdown(f"- {e}")
 
@@ -633,7 +631,7 @@ def draw_pareto_plot(
     ax.scatter(
         dom[:, 0], dom[:, 1],
         c="#3498db", s=50, alpha=0.6,
-        label="被支配解 (Dominated)", zorder=3,
+        label="Dominated", zorder=3,
     )
 
     # Pareto front — red, connected by line
@@ -644,7 +642,7 @@ def draw_pareto_plot(
         par[:, 0], par[:, 1],
         c="#e74c3c", s=80, edgecolors="black",
         linewidths=1,
-        label="帕累托前沿 (Pareto Front)",
+        label="Pareto Front",
         zorder=4,
     )
     ax.plot(
@@ -660,7 +658,7 @@ def draw_pareto_plot(
             [pt[0]], [pt[1]],
             c="gold", s=200, marker="*",
             edgecolors="black", linewidths=1.5,
-            label="你的选择", zorder=5,
+            label="Your choice", zorder=5,
         )
 
     # Label each point with its index
@@ -673,13 +671,13 @@ def draw_pareto_plot(
         )
 
     ax.set_xlabel(
-        "环境污染 (← 越低越好)", fontsize=12,
+        "Pollution (lower is better)", fontsize=12,
     )
     ax.set_ylabel(
-        "经济产出 (越高越好 →)", fontsize=12,
+        "Economic Output (higher is better)", fontsize=12,
     )
     ax.set_title(
-        "Aion's Edge · Level 2 — 帕累托前沿",
+        "Aion's Edge · Level 2 — Pareto Front",
         fontsize=14, fontweight="bold",
     )
     ax.legend(loc="upper right", fontsize=9)
@@ -727,21 +725,21 @@ def render_level2() -> None:
     """Render Level 2 — Multi-Objective Optimisation."""
     st.markdown(
         """
-        殖民地需要在 **经济产出** 和 **环境保护** 之间权衡。
-        下方 50 个随机方案中，**红色** 点构成 **帕累托前沿**
-        (Pareto Front) — 不可能在不牺牲一个目标的情况下
-        改善另一个目标的最优集合。
+        The colony must trade off **economic output** against **environmental
+        impact**. From the 50 random candidate solutions below, the **red**
+        points form the **Pareto Front** — the set of solutions that cannot
+        be improved on one objective without worsening another.
 
-        选择一个方案编号，系统将判断它是帕累托最优还是
-        被支配解。
+        Pick a solution index and the system will tell you whether it is
+        Pareto-optimal or dominated.
         """
     )
 
     # Sidebar controls
-    st.sidebar.header("🔬 L2 帕累托分析")
+    st.sidebar.header("🔬 L2 Pareto Analysis")
 
     if st.sidebar.button(
-        "🎲 生成新方案集",
+        "🎲 Generate New Solutions",
         use_container_width=True,
         key="l2_gen",
     ):
@@ -764,7 +762,7 @@ def render_level2() -> None:
 
     # Player selection
     selected_idx: int = st.sidebar.selectbox(
-        "选择方案编号 (0–49)",
+        "Select solution index (0–49)",
         options=list(range(N_MOO_SOLUTIONS)),
         index=0,
         key="l2_select",
@@ -783,13 +781,13 @@ def render_level2() -> None:
         st.pyplot(fig)
 
     with col_info:
-        st.markdown("### 📊 方案分析")
+        st.markdown("### 📊 Solution Analysis")
 
         pt = solutions[selected_idx]
         st.markdown(
-            f"**方案 #{selected_idx}**  \n"
-            f"环境污染: `{pt[0]:.1f}`  \n"
-            f"经济产出: `{pt[1]:.1f}`"
+            f"**Solution #{selected_idx}**  \n"
+            f"Pollution: `{pt[0]:.1f}`  \n"
+            f"Economic Output: `{pt[1]:.1f}`"
         )
 
         is_pareto = (
@@ -797,13 +795,12 @@ def render_level2() -> None:
         )
         if is_pareto:
             st.success(
-                "⭐ 帕累托最优！"
-                "该方案不被任何其他方案支配。"
+                "⭐ Pareto optimal! The solution is not dominated by any other."
             )
         else:
             st.error(
-                "❌ 被支配解！存在其他方案在所有目标上"
-                "都不差于此方案，且至少一个目标更优。"
+                "❌ Dominated solution! Another solution is at least as good"
+                " on all objectives and strictly better on at least one."
             )
             dom_by = _find_dominator(
                 selected_idx, solutions,
@@ -812,19 +809,18 @@ def render_level2() -> None:
             if dom_by is not None:
                 dp = solutions[dom_by]
                 st.markdown(
-                    f"例如，**方案 #{dom_by}** "
-                    f"(污染 `{dp[0]:.1f}`, "
-                    f"产出 `{dp[1]:.1f}`) 支配了你的选择。"
+                    f"For example, **Solution #{dom_by}** "
+                    f"(pollution `{dp[0]:.1f}`, output `{dp[1]:.1f}`) dominates your choice."
                 )
 
         st.markdown("---")
-        st.markdown("### 📈 帕累托前沿统计")
+        st.markdown("### 📈 Pareto Statistics")
         st.markdown(
-            f"- 帕累托最优方案数: "
+            f"- Number of Pareto-optimal solutions: "
             f"**{len(pareto_result.pareto_front)}**"
         )
         st.markdown(
-            f"- 被支配方案数: "
+            f"- Number of dominated solutions: "
             f"**{len(pareto_result.dominated)}**"
         )
 
@@ -834,14 +830,14 @@ def render_level2() -> None:
             maximize=[False, True],
         )
         st.markdown("---")
-        st.markdown("### ⚠️ Nadir 点 (最坏边界)")
+        st.markdown("### ⚠️ Nadir point (worst-case)")
         st.markdown(
-            f"污染最高: `{nadir[0]:.1f}`  \n"
-            f"产出最低: `{nadir[1]:.1f}`"
+            f"Highest pollution: `{nadir[0]:.1f}`  \n"
+            f"Lowest output: `{nadir[1]:.1f}`"
         )
         st.caption(
-            "Nadir 点代表帕累托前沿上各目标的最差值，"
-            "殖民地必须远离这个灾难点。"
+            "The Nadir point shows the worst value of each objective on the"
+            " Pareto front — avoid this disaster point."
         )
 
 
@@ -851,50 +847,50 @@ def render_level2() -> None:
 
 # Faction names and candidate plans
 FACTIONS = [
-    "⛏️ 矿工公会",
-    "🌿 环保主义者",
-    "👨\u200d👩\u200d👧 居民家庭",
+    "⛏️ Miners Guild",
+    "🌿 Environmentalists",
+    "👨\u200d👩\u200d👧 Residents",
 ]
-PLANS = ["方案 A", "方案 B", "方案 C"]
+PLANS = ["Plan A", "Plan B", "Plan C"]
 
 # Pre-built scenarios that guarantee interesting results.
 VOTING_SCENARIOS: List[Dict[str, object]] = [
     {
-        "name": "经典孔多塞悖论",
+        "name": "Classic Condorcet Paradox",
         "description": (
-            "矿工偏好 A>B>C，环保偏好 B>C>A，"
-            "居民偏好 C>A>B — 产生循环！"
+            "Miners prefer A>B>C, Environmentalists prefer B>C>A,"
+            " Residents prefer C>A>B — this produces a cycle!"
         ),
         "ballots": [
-            (["方案 A", "方案 B", "方案 C"], 4),
-            (["方案 B", "方案 C", "方案 A"], 3),
-            (["方案 C", "方案 A", "方案 B"], 2),
+            (["Plan A", "Plan B", "Plan C"], 4),
+            (["Plan B", "Plan C", "Plan A"], 3),
+            (["Plan C", "Plan A", "Plan B"], 2),
         ],
         "factions": [
-            ("⛏️ 矿工公会 (4票)", "A > B > C"),
-            ("🌿 环保主义者 (3票)", "B > C > A"),
-            ("👨\u200d👩\u200d👧 居民家庭 (2票)", "C > A > B"),
+            ("⛏️ Miners Guild (4 votes)", "A > B > C"),
+            ("🌿 Environmentalists (3 votes)", "B > C > A"),
+            ("👨\u200d👩\u200d👧 Residents (2 votes)", "C > A > B"),
         ],
     },
     {
-        "name": "多数制 vs 波达计数分歧",
+        "name": "Plurality vs Borda Divergence",
         "description": (
-            "多数制和波达计数产生不同赢家！"
+            "Plurality and Borda can pick different winners!"
         ),
         "ballots": [
-            (["方案 A", "方案 B", "方案 C"], 5),
-            (["方案 B", "方案 C", "方案 A"], 4),
-            (["方案 C", "方案 B", "方案 A"], 3),
+            (["Plan A", "Plan B", "Plan C"], 5),
+            (["Plan B", "Plan C", "Plan A"], 4),
+            (["Plan C", "Plan B", "Plan A"], 3),
         ],
         "factions": [
-            ("⛏️ 矿工公会 (5票)", "A > B > C"),
-            ("🌿 环保主义者 (4票)", "B > C > A"),
-            ("👨\u200d👩\u200d👧 居民家庭 (3票)", "C > B > A"),
+            ("⛏️ Miners Guild (5 votes)", "A > B > C"),
+            ("🌿 Environmentalists (4 votes)", "B > C > A"),
+            ("👨\u200d👩\u200d👧 Residents (3 votes)", "C > B > A"),
         ],
     },
     {
-        "name": "随机偏好",
-        "description": "随机生成的派系偏好。",
+        "name": "Random Preferences",
+        "description": "Randomly generated faction preferences.",
         "ballots": None,  # generated at runtime
         "factions": None,
     },
@@ -920,7 +916,7 @@ def _generate_random_ballots() -> Tuple[
         ballots.append((ranking, weight))
         pref_str = " > ".join(ranking)
         factions_info.append(
-            (f"{faction_name} ({weight}票)", pref_str)
+            (f"{faction_name} ({weight} votes)", pref_str)
         )
     return ballots, factions_info
 
@@ -929,20 +925,21 @@ def render_level3() -> None:
     """Render Level 3 — Voting Theory / MCDA."""
     st.markdown(
         """
-        殖民地议会有三个派系，需要从三个发展方案中选出一个
-        执行。不同的投票规则可能产生 **不同的赢家** ——
-        这就是著名的 **投票悖论**。
+        The colony parliament has three factions that must choose one development
+        plan to implement. Different voting rules can produce **different
+        winners** — this is the well-known **voting paradox**.
 
-        选择一个场景，然后用不同的投票方法观察结果变化。
+        Choose a scenario and try different voting methods to see how winners
+        change.
         """
     )
 
     # --- Sidebar: scenario selection -------------------------
-    st.sidebar.header("🏛️ L3 议会投票")
+    st.sidebar.header("🏛️ L3 Parliamentary Voting")
 
     scenario_names = [s["name"] for s in VOTING_SCENARIOS]
     chosen_idx = st.sidebar.radio(
-        "选择场景",
+        "Choose scenario",
         options=range(len(scenario_names)),
         format_func=lambda i: scenario_names[i],
         key="l3_scenario",
@@ -950,7 +947,7 @@ def render_level3() -> None:
     scenario = VOTING_SCENARIOS[chosen_idx]
 
     if st.sidebar.button(
-        "🎲 刷新随机场景",
+        "🎲 Refresh random scenario",
         use_container_width=True,
         key="l3_refresh",
     ):
@@ -971,40 +968,40 @@ def render_level3() -> None:
         factions_info = st.session_state.voting_factions
 
     # --- Display preference table ----------------------------
-    st.markdown(f"**场景: {scenario['name']}**")
+    st.markdown(f"**Scenario: {scenario['name']}**")
     st.markdown(f"*{scenario['description']}*")
-    st.markdown("#### 🗳️ 派系偏好")
+    st.markdown("#### 🗳️ Faction preferences")
 
     st.table({
-        "派系": [f[0] for f in factions_info],
-        "偏好排序": [f[1] for f in factions_info],
+        "Faction": [f[0] for f in factions_info],
+        "Preferences": [f[1] for f in factions_info],
     })
 
     # --- Voting buttons in columns ---------------------------
-    st.markdown("#### 🗳️ 选择投票方法")
+    st.markdown("#### 🗳️ Choose a voting method")
     btn1, btn2, btn3 = st.columns(3)
 
     with btn1:
         run_plurality = st.button(
-            "📊 多数制 (Plurality)",
+            "📊 Plurality",
             use_container_width=True,
             key="l3_plurality",
         )
     with btn2:
         run_borda = st.button(
-            "📊 波达计数 (Borda)",
+            "📊 Borda Count",
             use_container_width=True,
             key="l3_borda",
         )
     with btn3:
         run_condorcet = st.button(
-            "📊 孔多塞 (Condorcet)",
+            "📊 Condorcet",
             use_container_width=True,
             key="l3_condorcet",
         )
 
     run_all = st.button(
-        "⚡ 同时运行所有方法 — 展示投票悖论",
+        "⚡ Run all methods — show voting paradox",
         use_container_width=True,
         key="l3_all",
     )
@@ -1033,9 +1030,9 @@ def _show_plurality(
     """Display Plurality voting results."""
     result = VotingSystem.plurality(ballots)
     st.markdown("---")
-    st.markdown("### 📊 多数制 (Plurality) 结果")
+    st.markdown("### 📊 Plurality results")
     st.markdown(
-        "每个派系的 **第一选择** 获得全部票数。"
+        "Each faction's **first choice** receives all of its votes."
     )
 
     col_s, col_c = st.columns([1, 1])
@@ -1043,16 +1040,15 @@ def _show_plurality(
         for c in sorted(result.scores.keys()):
             bar = "█" * result.scores[c]
             st.markdown(
-                f"**{c}**: {result.scores[c]} 票 "
+                f"**{c}**: {result.scores[c]} votes "
                 f"`{bar}`"
             )
     with col_c:
         fig = _bar_chart(
-            result.scores, "多数制得分", "#3498db",
+            result.scores, "Plurality scores", "#3498db",
         )
         st.pyplot(fig)
-
-    st.success(f"🏆 多数制赢家: **{result.winner}**")
+    st.success(f"🏆 Plurality winner: **{result.winner}**")
 
 
 def _show_borda(
@@ -1061,10 +1057,9 @@ def _show_borda(
     """Display Borda Count voting results."""
     result = VotingSystem.borda_count(ballots)
     st.markdown("---")
-    st.markdown("### 📊 波达计数 (Borda Count) 结果")
+    st.markdown("### 📊 Borda Count results")
     st.markdown(
-        "第 1 名得 2 分，第 2 名得 1 分，"
-        "第 3 名得 0 分（乘以派系票数）。"
+        "1st gets 2 points, 2nd gets 1 point, 3rd gets 0 points (times faction votes)."
     )
 
     col_s, col_c = st.columns([1, 1])
@@ -1076,11 +1071,10 @@ def _show_borda(
     with col_c:
         fig = _bar_chart(
             {k: int(v) for k, v in result.scores.items()},
-            "波达计数得分", "#2ecc71",
+            "Borda scores", "#2ecc71",
         )
         st.pyplot(fig)
-
-    st.success(f"🏆 波达计数赢家: **{result.winner}**")
+    st.success(f"🏆 Borda winner: **{result.winner}**")
 
 
 def _show_condorcet(
@@ -1089,17 +1083,16 @@ def _show_condorcet(
     """Display Condorcet pairwise comparison results."""
     result = VotingSystem.condorcet(ballots)
     st.markdown("---")
-    st.markdown("### 📊 孔多塞 (Condorcet) 结果")
+    st.markdown("### 📊 Condorcet results")
     st.markdown(
-        "每两个方案进行一对一比较，"
-        "看哪个方案能击败所有对手。"
+        "Compare each pair of plans head-to-head to see which plan beats all others."
     )
 
     # Pairwise comparison table
     candidates = sorted({
         c for ranking, _ in ballots for c in ranking
     })
-    st.markdown("**两两对决矩阵**（行击败列的票数）:")
+    st.markdown("**Pairwise comparison matrix** (row beats column votes):")
 
     header = [""] + candidates
     rows = []
@@ -1129,17 +1122,15 @@ def _show_condorcet(
 
     if result.winner:
         st.success(
-            f"🏆 孔多塞赢家: **{result.winner}** "
-            f"(击败所有对手)"
+            f"🏆 Condorcet winner: **{result.winner}** (beats all opponents)"
         )
     else:
         st.error(
-            "🔄 **孔多塞悖论！** 不存在能击败所有对手的"
-            "方案 — 出现投票循环！"
+            "🔄 Condorcet paradox! No plan beats all opponents — a voting cycle exists."
         )
         if result.cycle_description:
             st.warning(
-                f"循环: {result.cycle_description}"
+                f"Cycle: {result.cycle_description}"
             )
 
 
@@ -1152,32 +1143,30 @@ def _detect_paradox(
     cond = VotingSystem.condorcet(ballots)
 
     winners = {
-        "多数制": plur.winner,
-        "波达计数": borda.winner,
-        "孔多塞": (
-            cond.winner if cond.winner else "无 (循环)"
+        "Plurality": plur.winner,
+        "Borda": borda.winner,
+        "Condorcet": (
+            cond.winner if cond.winner else "None (cycle)"
         ),
     }
 
     st.markdown("---")
-    st.markdown("### 🔍 投票悖论分析")
+    st.markdown("### 🔍 Voting paradox analysis")
 
     unique = set(winners.values())
-    if len(unique) == 1 and "无 (循环)" not in unique:
+    if len(unique) == 1 and "None (cycle)" not in unique:
         st.info(
-            f"三种方法产生了 **相同的赢家**: "
-            f"**{list(unique)[0]}** — 没有悖论。"
+            f"All methods produced the **same winner**: **{list(unique)[0]}** — no paradox."
         )
     else:
         st.warning(
-            "⚠️ **发现投票悖论！** "
-            "不同规则产生了不同赢家："
+            "⚠️ Voting paradox detected! Different rules produced different winners:"
         )
         for method, winner in winners.items():
             st.markdown(f"- **{method}** → {winner}")
         st.markdown(
-            "\n> 这印证了 **Arrow 不可能定理**：没有一种"
-            "排序投票制度能同时满足所有公平性标准。"
+            "\n> This illustrates Arrow's impossibility theorem: no ranked voting"
+            " system can satisfy all fairness criteria simultaneously."
         )
 
 
@@ -1202,7 +1191,7 @@ def _bar_chart(
 
     bars = ax.barh(candidates, values, color=color, alpha=0.8)
     ax.bar_label(bars, padding=3)
-    ax.set_xlabel("得分")
+    ax.set_xlabel("Score")
     ax.set_title(title, fontsize=11, fontweight="bold")
     ax.grid(axis="x", alpha=0.3)
     fig.tight_layout()
@@ -1226,9 +1215,9 @@ def main() -> None:
     st.title("🚀 Aion's Edge: The Optimization Frontier")
 
     tab1, tab2, tab3 = st.tabs([
-        "🔋 Level 1 — 线性规划",
-        "🔬 Level 2 — 多目标优化",
-        "🏛️ Level 3 — 议会投票",
+        "🔋 Level 1 — Linear Programming",
+        "🔬 Level 2 — Multi-Objective Optimisation",
+        "🏛️ Level 3 — Parliamentary Voting",
     ])
 
     with tab1:
