@@ -1,11 +1,29 @@
 # Neuroevolution Games
 
-Neuroevolution experiments using genetic algorithms and NEAT to train AI agents for classic games: Flappy Bird and Lunar Lander.
+Hands-on projects for the course "Multi-Criteria Optimization and
+Decision Analysis." The main experience is Aion's Edge (a Streamlit
+strategy game), plus two classic neuroevolution demos.
 
 ## 🎮 Projects
 
-### 1. Flappy Bird Evolution
-A pure NumPy neural network implementation that learns to play Flappy Bird through genetic algorithm-based evolution.
+### 1. Aion's Edge (Main Game)
+A Streamlit colony-strategy game that teaches Linear Programming,
+Multi-Objective Optimization, and Voting Theory/MCDA through three
+playable levels.
+
+**Features:**
+- Level 1: LP survival planning with random events
+- Level 2: Pareto-front exploration and Nadir analysis
+- Level 3: Voting systems and coalition outcomes
+
+**Run:**
+```bash
+uv run streamlit run src/app.py
+```
+
+### 2. Flappy Bird Evolution
+A pure NumPy neural network learns to play Flappy Bird through a
+genetic algorithm.
 
 **Features:**
 - Custom neural network (3 inputs → 6 hidden → 1 output)
@@ -13,18 +31,14 @@ A pure NumPy neural network implementation that learns to play Flappy Bird throu
 - Real-time visualization with PyGame
 - Fast-forward training mode (press Space)
 
-**Architecture:**
-- **Inputs:** Bird height, distance to pipe gap, horizontal distance to pipe
-- **Selection:** Top 5 performers breed the next generation
-- **Mutation:** Random weight perturbation (no gradient descent)
-
 **Run:**
 ```bash
-uv run src/flappy_evolution.py
+uv run other_games/flappy_evolution.py
 ```
 
-### 2. Lunar Lander (NEAT)
-Uses NEAT (NeuroEvolution of Augmenting Topologies) to evolve neural networks for the OpenAI Gymnasium Lunar Lander environment.
+### 3. Lunar Lander (NEAT)
+Uses NEAT (NeuroEvolution of Augmenting Topologies) to evolve neural
+networks for the Gymnasium Lunar Lander environment.
 
 **Features:**
 - NEAT topology evolution (nodes + connections)
@@ -35,10 +49,10 @@ Uses NEAT (NeuroEvolution of Augmenting Topologies) to evolve neural networks fo
 **Run:**
 ```bash
 # Train
-uv run src/lunar_neat.py
+uv run other_games/lunar_neat.py
 
 # Or resume from checkpoint
-uv run python -c "import neat, pickle; p = neat.Checkpointer.restore_checkpoint('checkpoints/neat-checkpoint-50'); # ... continue training"
+uv run python -c "import neat; p = neat.Checkpointer.restore_checkpoint('checkpoints/neat-checkpoint-50')"
 ```
 
 ## 📦 Installation
@@ -51,10 +65,16 @@ uv sync
 
 Or manually install dependencies:
 ```bash
-uv pip install gymnasium[box2d] neat-python numpy pygame
+uv pip install gymnasium[box2d] neat-python numpy pygame pyyaml scipy streamlit
 ```
 
 ## 🧬 How It Works
+
+### Aion's Edge Math Engine
+The core logic lives in `src/OptimizationEngine.py`:
+- `LPSolver`: linear programming for survival planning
+- `MOOSolver`: Pareto-front detection and Nadir analysis
+- `VotingSystem`: voting rules for MCDA decisions
 
 ### Genetic Algorithm (Flappy Bird)
 1. **Initialize** population with random neural networks
@@ -74,8 +94,11 @@ uv pip install gymnasium[box2d] neat-python numpy pygame
 ```
 neuroevolution_games/
 ├── src/
-│   ├── flappy_evolution.py  # Flappy Bird with custom GA
-│   └── lunar_neat.py         # Lunar Lander with NEAT
+│   ├── app.py                 # Aion's Edge (Streamlit app)
+│   └── OptimizationEngine.py  # LP, MOO, and voting solvers
+├── other_games/
+│   ├── flappy_evolution.py    # Flappy Bird with custom GA
+│   └── lunar_neat.py          # Lunar Lander with NEAT
 ├── config/
 │   └── config-feedforward.yaml  # NEAT configuration
 ├── checkpoints/              # Training checkpoints (auto-saved)
