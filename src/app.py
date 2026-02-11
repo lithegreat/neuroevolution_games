@@ -479,7 +479,7 @@ def render_level1() -> None:
     )
 
     st.sidebar.markdown("---")
-    st.sidebar.markdown("### 📋 当前约束")
+    st.sidebar.markdown("### 📋 Current Constraints")
     st.sidebar.latex(
         rf"C_1:\;2x_1+x_2\leq {b_ub[0]:.0f}"
     )
@@ -762,7 +762,7 @@ def render_level2() -> None:
 
     # Player selection
     selected_idx: int = st.sidebar.selectbox(
-        "Select solution index (0–49)",
+        "Select solution index (0-49)",
         options=list(range(N_MOO_SOLUTIONS)),
         index=0,
         key="l2_select",
