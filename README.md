@@ -55,18 +55,33 @@ uv run other_games/lunar_neat.py
 uv run python -c "import neat; p = neat.Checkpointer.restore_checkpoint('checkpoints/neat-checkpoint-50')"
 ```
 
-## 📦 Installation
+## 📦 Installation & Troubleshooting
 
-**Requirements:** Python 3.14+
+### Prerequisites (Windows)
+If you are on Windows, you may encounter issues building `box2d-py` and `pygame`. Follow these steps for a smooth setup:
+
+1. **Python Version:** Use **Python 3.11**. Newer versions (3.12+) may lack pre-built wheels for `pygame` and `box2d-py`, requiring a complex C++ build environment.
+2. **SWIG:** `box2d-py` requires SWIG. If not installed on your system, `uv` will attempt to use the `swig` Python package defined in `pyproject.toml`.
+3. **Setuptools:** `pygame` requires an older version of `setuptools` (< 70) to build correctly on some systems.
+
+### Quick Start
+The project is optimized for [uv](https://github.com/astral-sh/uv).
 
 ```bash
-uv sync
+# 1. Sync the environment (main game only)
+uv sync --python 3.11
+
+# 2. Sync with optional games (Flappy Bird & Lunar Lander)
+uv sync --python 3.11 --extra other-games --preview-features extra-build-dependencies
+
+# 3. Run the main game
+uv run streamlit run src/app.py
 ```
 
-Or manually install dependencies:
-```bash
-uv pip install gymnasium[box2d] neat-python numpy pygame pyyaml scipy streamlit
-```
+### Known Issues
+- **Building `pygame` fails:** Ensure you have the "Desktop development with C++" workload installed from the [Visual Studio Installer](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+- **`vcvarsall.bat` not found:** This indicates a missing C++ compiler. Use Python 3.11 to prefer binary wheels.
+- **`box2d-py` build error:** This usually means `swig` is missing. The `uv sync` command with `--preview-features` should handle this via `extra-build-dependencies`.
 
 ## 🧬 How It Works
 
